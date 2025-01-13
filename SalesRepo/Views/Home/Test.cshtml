@@ -78,13 +78,14 @@ Html.DevExtreme().DataGrid<Sales>().ID("grid")
         // });
 
             const grid = $("#grid").dxDataGrid("instance");
-             const columns = grid.getVisibleColumns();
-            console.log(columns)
+            console.log(grid)
+            console.log("DataSource",grid.getDataSource());
+            console.log("item",grid.getDataSource().items());
             const loadOptions = grid.getDataSource().loadOptions();
             loadOptions.filter = grid.getCombinedFilter();
-            const filters = grid.getCombinedFilter();
-            console.log( filters)
             const gridState = grid.state();
+            const visibleRows = grid.getVisibleRows();
+            const dataToExport = visibleRows.map(row => row.data); // Extrae solo los datos de las filas
             //7a7c4f8f-a159-4bea-ac1b-c71ce43afdf5
             let params = '?';
             [
@@ -98,20 +99,50 @@ Html.DevExtreme().DataGrid<Sales>().ID("grid")
             });
             params = params.slice(0, -1);
             const url = `ExportSalesToExcel${params}`;
-            $.ajax(url, {
-                contentType: "application/json",
-                data: JSON.stringify(gridState),
-                method: "POST",
-                dataType: "json",
-                success: function(response) {
-            if (response.downloadUrl) {
-                window.location.href = response.downloadUrl;
-            }
+        //     $.ajax(url, {
+        //         contentType: "application/json",
+        //         data: JSON.stringify(gridState),
+        //         method: "POST",
+        //         dataType: "json",
+        //         success: function(response) {
+        //     if (response.downloadUrl) {
+        //         window.location.href = response.downloadUrl;
+        //     }
+        // },
+        // error: function(xhr, status, error) {
+        //     console.error("Error al exportar:", error);
+        // }
+        //     });
+            $.ajax({
+        url: `/Home/ExportSalesToExcel${params}`, // Reemplaza con tu URL real
+        method: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify( gridState),
+        xhrFields: {
+            responseType: 'blob' // Para manejar binarios
         },
-        error: function(xhr, status, error) {
+        success: function (data, status, xhr) {
+            // Extraer el nombre del archivo si está presente en el encabezado `Content-Disposition`
+            var filename = "sales.xlsx";
+
+            // Crear un enlace temporal
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(data);
+            link.download = filename;
+            document.body.appendChild(link);
+
+            // Forzar la descarga
+            link.click();
+
+            // Limpiar el enlace temporal
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(link.href);
+        },
+        error: function (xhr, status, error) {
             console.error("Error al exportar:", error);
         }
-            });
+    });
+
     }
 </script>
 <style>

@@ -93,11 +93,13 @@ namespace SalesRepo.Controllers
             try
             {
                 byte[] result = await exporting.GetBytesFromData(dataToExport);
-                 tempFileName = Path.Combine(Path.GetTempPath(), $"Sales_{Guid.NewGuid()}.xlsx");
-                await System.IO.File.WriteAllBytesAsync(tempFileName, result);
+                // tempFileName = Path.Combine(Path.GetTempPath(), $"Sales_{Guid.NewGuid()}.xlsx");
+                //await System.IO.File.WriteAllBytesAsync(tempFileName, result);
 
                 // Retornar la URL para descarga
-                return Ok(new { downloadUrl = Url.Action("DownloadFile", "Home", new { filePath = tempFileName }) });
+                //return Ok(new { downloadUrl = Url.Action("DownloadFile", "Home", new { filePath = tempFileName }) });
+                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Sales.xlsx");
+
             }
             catch (Exception ex)
             {

@@ -1,0 +1,3 @@
+﻿@using SalesRepo
+@using SalesRepo.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

@@ -1,0 +1,141 @@
+﻿@using DevExtreme.AspNet.Mvc.Builders;
+@using Newtonsoft;
+@model SalesRepo.Models.GetSalePreviewVM;
+@section Localization {
+    <script src="@Url.Action("CldrData","Home",new {t=CldrDataScriptBuilder.GetCacheParam()})"></script>
+    <script src="~/js/devextreme/localization/dx.messages.es.js"></script>
+    <script src="~/js/devextreme/localization/dx.messages.en.js"></script>
+}
+
+
+
+<a asp-controller="Home" asp-action="Excel"> algo descargar</a>
+@(
+Html.DevExtreme().DataGrid<Sales>().ID("grid")
+     .DataSource(DS => DS
+        .Mvc()
+        .Controller("Home")
+        .LoadAction("GetSalesPivotGet")
+        .LoadParams(new
+        {
+            start = Model.SalesFrom.ToString("dd/MM/yyyy HH:mm:ss"),
+            end = Model.SalesUpTo.ToString("dd/MM/yyyy HH:mm:ss"),
+            userId = Model.userId
+        })
+)
+    .RemoteOperations(false)
+    .Columns(columns =>
+    {
+        columns.AddFor(e=>e.ArticleDescription);
+        columns.AddFor(e=>e.Brand);
+        columns.AddFor(e=>e.Category);
+        columns.AddFor(e=>e.CostAmount);
+        columns.AddFor(e=>e.CostPrice);
+        columns.AddFor(e=>e.Cuit);
+        columns.AddFor(e=>e.Date);
+        columns.AddFor(e=>e.InvoiceNumber);
+        columns.AddFor(e=>e.InvoiceType);
+        columns.AddFor(e=>e.Quantity);
+        columns.AddFor(e=>e.SaleAmount);
+        columns.AddFor(e=>e.SalePrice);
+        columns.AddFor(e=>e.Size);
+        columns.AddFor(e=>e.SKU);
+        columns.AddFor(e=>e.StoreCode);
+        columns.AddFor(e=>e.StoreName);
+    })
+      .HeaderFilter(f => f.Visible(true))
+    .AllowColumnReordering(true)
+    .RowAlternationEnabled(true)
+    .Paging(paging => paging.Enabled(true))
+    .Pager(pager => pager.ShowPageSizeSelector(true))
+    .Sorting(sorting => sorting.Mode(GridSortingMode.Multiple))
+    .FilterRow(filter => filter.Visible(true))
+    .SearchPanel(panel => panel.Visible(true))
+    .GroupPanel(group => group.Visible(false))
+
+    .Export(excel => excel.Enabled(true))
+
+
+    .OnExporting("exporting")
+    )
+
+<script>
+        function isNotEmpty(value) {
+        return value !== undefined && value !== null && value !== '';
+    }
+    function exporting(e) {
+        // var workbook = new ExcelJS.Workbook();
+        // var worksheet = workbook.addWorksheet('Sales');
+        // console.log(e);
+        // DevExpress.excelExporter.exportDataGrid({
+        //     component: e.component,
+        //     worksheet: worksheet,
+        //     autoFilterEnabled: true
+        // }).then(function () {
+        //     workbook.xlsx.writeBuffer().then(function (buffer) {
+        //         saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'Sales.xlsx');
+        //     });
+        // });
+
+            const grid = $("#grid").dxDataGrid("instance");
+             const columns = grid.getVisibleColumns();
+            console.log(columns)
+            const loadOptions = grid.getDataSource().loadOptions();
+            loadOptions.filter = grid.getCombinedFilter();
+            const filters = grid.getCombinedFilter();
+            console.log( filters)
+            const gridState = grid.state();
+            //7a7c4f8f-a159-4bea-ac1b-c71ce43afdf5
+            let params = '?';
+            [
+                'sort',
+                'filter',
+                'totalSummary',
+                'group',
+                'groupSummary'
+            ].forEach(function (i) {
+                if (i in loadOptions && isNotEmpty(loadOptions[i])) { params += `${i}=${JSON.stringify(loadOptions[i])}&`; }
+            });
+            params = params.slice(0, -1);
+            const url = `ExportSalesToExcel${params}`;
+            $.ajax(url, {
+                contentType: "application/json",
+                data: JSON.stringify(gridState),
+                method: "POST",
+                dataType: "json",
+                success: function(response) {
+            if (response.downloadUrl) {
+                window.location.href = response.downloadUrl;
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error al exportar:", error);
+        }
+            });
+    }
+</script>
+<style>
+    .dx-column-indicators {
+        float: unset !important;
+    }
+
+    .dx-datagrid-action.dx-cell-focus-disabled {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.10.1/polyfill.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+}
+<script>
+    DevExpress.localization.loadMessages({
+        "es": {
+            "dxDataGrid-loadingText": "Cargando"
+        }
+    });
+    DevExpress.localization.locale("es");
+</script>

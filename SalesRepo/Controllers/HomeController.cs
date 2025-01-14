@@ -83,9 +83,9 @@ namespace SalesRepo.Controllers
 
             var GetResult = Sales.GetMockSales();
 
-            // here, we need to get access to the currents filters in the ${loadOptions}, but we get a [null,"contains","The parameter"]
-            // we dont know why the in the loaderOption dont have a columnName/dataField. 
-            //var data = await _previewHttpClient.GetSalesTransaction();
+            // here, we need to get access to the currents filters in the ${loadOptions},
+            // but we get a [null,"contains","The parameter"]
+            // we dont know why in the loaderOption dont have a columnName/dataField. 
             var dataFiltered = (IEnumerable<Sales>)DataSourceLoader.Load(GetResult, loadOptions).data;
             var dataToExport = dataFiltered.ToList();
 
@@ -93,11 +93,8 @@ namespace SalesRepo.Controllers
             try
             {
                 byte[] result = await exporting.GetBytesFromData(dataToExport);
-                // tempFileName = Path.Combine(Path.GetTempPath(), $"Sales_{Guid.NewGuid()}.xlsx");
-                //await System.IO.File.WriteAllBytesAsync(tempFileName, result);
-
-                // Retornar la URL para descarga
-                //return Ok(new { downloadUrl = Url.Action("DownloadFile", "Home", new { filePath = tempFileName }) });
+                
+               
                 return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Sales.xlsx");
 
             }
@@ -106,24 +103,8 @@ namespace SalesRepo.Controllers
                 System.IO.File.Delete(tempFileName);
                 throw;
             }
-            // export data
         }
-        [HttpGet]
-        public IActionResult DownloadFile(string filePath)
-        {
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound();
-            }
 
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
-            var fileName = Path.GetFileName(filePath);
-
-            // Eliminar el archivo temporalmente después de ser descargado
-            System.IO.File.Delete(filePath);
-
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
-        }
         public ActionResult CldrData()
         {
             return new DevExtreme.AspNet.Mvc.CldrDataScriptBuilder()

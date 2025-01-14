@@ -9,7 +9,6 @@
 
 
 
-<a asp-controller="Home" asp-action="Excel"> algo descargar</a>
 @(
 Html.DevExtreme().DataGrid<Sales>().ID("grid")
      .DataSource(DS => DS
@@ -66,14 +65,12 @@ Html.DevExtreme().DataGrid<Sales>().ID("grid")
     function exporting(e) {
      
             const grid = $("#grid").dxDataGrid("instance");
-            console.log(grid)
-            console.log("DataSource",grid.getDataSource());
-            console.log("item",grid.getDataSource().items());
             const loadOptions = grid.getDataSource().loadOptions();
             loadOptions.filter = grid.getCombinedFilter();
+            console.log(loadOptions.filter);
             const gridState = grid.state();
-            const visibleRows = grid.getVisibleRows();
-            const dataToExport = visibleRows.map(row => row.data); // Extrae solo los datos de las filas
+            // const visibleRows = grid.getVisibleRows();
+            // const dataToExport = visibleRows.map(row => row.data); // Extrae solo los datos de las filas
             //7a7c4f8f-a159-4bea-ac1b-c71ce43afdf5
             let params = '?';
             [
@@ -98,7 +95,7 @@ Html.DevExtreme().DataGrid<Sales>().ID("grid")
         success: function (data, status, xhr) {
             // Extraer el nombre del archivo si está presente en el encabezado `Content-Disposition`
             var filename = "sales.xlsx";
-
+                
             // Crear un enlace temporal
             var link = document.createElement('a');
             link.href = window.URL.createObjectURL(data);

@@ -105,14 +105,7 @@ namespace SalesRepo.Controllers
             }
         }
 
-        public ActionResult CldrData()
-        {
-            return new DevExtreme.AspNet.Mvc.CldrDataScriptBuilder()
-                .SetCldrPath("~/node_modules/cldr-data")
-                .SetInitialLocale("es")
-                .UseLocales("es", "en")
-                .Build();
-        }
+    
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

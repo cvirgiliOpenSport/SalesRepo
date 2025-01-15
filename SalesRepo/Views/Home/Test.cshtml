@@ -1,11 +1,7 @@
 ﻿@using DevExtreme.AspNet.Mvc.Builders;
 @using Newtonsoft;
 @model SalesRepo.Models.GetSalePreviewVM;
-@section Localization {
-    <script src="@Url.Action("CldrData","Home",new {t=CldrDataScriptBuilder.GetCacheParam()})"></script>
-    <script src="~/js/devextreme/localization/dx.messages.es.js"></script>
-    <script src="~/js/devextreme/localization/dx.messages.en.js"></script>
-}
+
 
 
 <h3>ads</h3>
@@ -133,11 +129,11 @@ Html.DevExtreme().DataGrid<Sales>().ID("grid")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 }
-<script>
+@* <script>
     DevExpress.localization.loadMessages({
         "es": {
             "dxDataGrid-loadingText": "Cargando"
         }
     });
     DevExpress.localization.locale("es");
-</script>
+</script> *@

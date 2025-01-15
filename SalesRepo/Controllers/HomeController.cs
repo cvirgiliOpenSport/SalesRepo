@@ -98,9 +98,8 @@ namespace SalesRepo.Controllers
                 return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Sales.xlsx");
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                System.IO.File.Delete(tempFileName);
                 throw;
             }
         }
